@@ -1,4 +1,4 @@
-package endrlogger
+package endrLogger
 
 import (
 	"errors"

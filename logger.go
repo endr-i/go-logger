@@ -77,6 +77,9 @@ func NewLogger(config Config) (logger *Logger, err error) {
 	if config.Dir == "" {
 		config.Dir = "./_log/"
 	}
+	if _, err := os.Stat(config.Dir); os.IsNotExist(err) {
+		os.MkdirAll(config.Dir, os.ModePerm)
+	}
 	if config.Dir[len(config.Dir)-1] != '/' {
 		config.Dir += "/"
 	}

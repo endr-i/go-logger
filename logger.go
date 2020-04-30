@@ -11,6 +11,7 @@ const (
 	LevelNone = iota
 	LevelInfo
 	LevelError
+	LevelCritical
 	LevelDebug
 )
 
@@ -23,12 +24,13 @@ type Config struct {
 }
 
 type Logger struct {
-	defaultLogger *log.Logger
-	errLogger     *log.Logger
-	debugLogger   *log.Logger
-	infoLogger    *log.Logger
-	files         []*os.File
-	config        *Config
+	defaultLogger  *log.Logger
+	errLogger      *log.Logger
+	debugLogger    *log.Logger
+	infoLogger     *log.Logger
+	criticalLogger *log.Logger
+	files          []*os.File
+	config         *Config
 }
 
 func (logger *Logger) Println(msg ...interface{}) {
@@ -39,21 +41,38 @@ func (logger *Logger) Println(msg ...interface{}) {
 func (logger *Logger) Info(msg ...interface{}) {
 	if logger.infoLogger != nil {
 		logger.infoLogger.Println(msg...)
+	} else {
+		logger.Error(msg...)
 	}
-	logger.Error(msg...)
+	logger.checkDebug(msg...)
 }
 
 func (logger *Logger) Error(msg ...interface{}) {
 	if logger.errLogger != nil {
 		logger.errLogger.Println(msg...)
+	} else {
+		logger.Critical(msg...)
 	}
-	logger.Debug(msg...)
+	logger.checkDebug(msg...)
+}
+
+func (logger *Logger) Critical(msg ...interface{}) {
+	if logger.errLogger != nil {
+		logger.errLogger.Println(msg...)
+	}
+	logger.checkDebug(msg...)
 }
 
 func (logger *Logger) Debug(msg ...interface{}) {
 	if logger.debugLogger != nil {
 		logger.debugLogger.Println(msg...)
 		logger.debugLogger.Println(string(debug.Stack()))
+	}
+}
+
+func (logger *Logger) checkDebug(msg ...interface{}) {
+	if logger.debugLogger != nil {
+		logger.Debug(msg...)
 	}
 }
 

@@ -105,15 +105,23 @@ func NewLogger(config Config) (logger *Logger, err error) {
 	defaultLogger := log.New(log.Writer(), "", log.LstdFlags)
 	var files []*os.File
 	var debugLogger *log.Logger
-	if config.Level <= LevelDebug {
+	if config.Level >= LevelDebug {
 		l, debugFile := createLogger(config.Dir+"debug.log", "DEBUG: ")
 		if debugFile != nil {
 			files = append(files, debugFile)
 			debugLogger = l
 		}
 	}
+	var criticalLogger *log.Logger
+	if config.Level >= LevelCritical {
+		l, crFile := createLogger(config.Dir+"critical.log", "ERROR: ")
+		if crFile != nil {
+			files = append(files, crFile)
+			criticalLogger = l
+		}
+	}
 	var errLogger *log.Logger
-	if config.Level <= LevelError {
+	if config.Level >= LevelError {
 		l, errFile := createLogger(config.Dir+"error.log", "ERROR: ")
 		if errFile != nil {
 			files = append(files, errFile)
@@ -121,7 +129,7 @@ func NewLogger(config Config) (logger *Logger, err error) {
 		}
 	}
 	var infoLogger *log.Logger
-	if config.Level <= LevelInfo {
+	if config.Level >= LevelInfo {
 		l, infoFile := createLogger(config.Dir+"info.log", "INFO: ")
 		if infoFile != nil {
 			files = append(files, infoFile)
@@ -129,12 +137,13 @@ func NewLogger(config Config) (logger *Logger, err error) {
 		}
 	}
 	logger = &Logger{
-		defaultLogger: defaultLogger,
-		errLogger:     errLogger,
-		debugLogger:   debugLogger,
-		infoLogger:    infoLogger,
-		files:         files,
-		config:        &config,
+		defaultLogger:  defaultLogger,
+		errLogger:      errLogger,
+		debugLogger:    debugLogger,
+		infoLogger:     infoLogger,
+		criticalLogger: criticalLogger,
+		files:          files,
+		config:         &config,
 	}
 	return
 }

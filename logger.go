@@ -8,9 +8,10 @@ import (
 )
 
 const (
-	LevelDebug = iota
-	LevelError
+	LevelNone = iota
 	LevelInfo
+	LevelError
+	LevelDebug
 )
 
 type Config struct {
@@ -31,19 +32,20 @@ type Logger struct {
 }
 
 func (logger *Logger) Println(msg ...interface{}) {
+	logger.defaultLogger.Println(msg...)
+	logger.Error(msg...)
+}
+
+func (logger *Logger) Info(msg ...interface{}) {
+	if logger.infoLogger != nil {
+		logger.infoLogger.Println(msg...)
+	}
 	logger.Error(msg...)
 }
 
 func (logger *Logger) Error(msg ...interface{}) {
 	if logger.errLogger != nil {
 		logger.errLogger.Println(msg...)
-	}
-	logger.Info(msg...)
-}
-
-func (logger *Logger) Info(msg ...interface{}) {
-	if logger.infoLogger != nil {
-		logger.infoLogger.Println(msg...)
 	}
 	logger.Debug(msg...)
 }
@@ -53,7 +55,6 @@ func (logger *Logger) Debug(msg ...interface{}) {
 		logger.debugLogger.Println(msg...)
 		logger.debugLogger.Println(string(debug.Stack()))
 	}
-	logger.defaultLogger.Println(msg...)
 }
 
 func (logger *Logger) Close() {

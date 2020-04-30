@@ -1,4 +1,4 @@
-package go_logger
+package logger
 
 import (
 	"errors"

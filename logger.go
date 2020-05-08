@@ -57,8 +57,8 @@ func (logger *Logger) Error(msg ...interface{}) {
 }
 
 func (logger *Logger) Critical(msg ...interface{}) {
-	if logger.errLogger != nil {
-		logger.errLogger.Println(msg...)
+	if logger.criticalLogger != nil {
+		logger.criticalLogger.Println(msg...)
 	}
 	logger.checkDebug(msg...)
 }

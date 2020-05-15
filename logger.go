@@ -61,6 +61,7 @@ func (logger *Logger) Critical(msg ...interface{}) {
 		logger.criticalLogger.Println(msg...)
 	}
 	logger.checkDebug(msg...)
+	log.Fatal(msg)
 }
 
 func (logger *Logger) Debug(msg ...interface{}) {
